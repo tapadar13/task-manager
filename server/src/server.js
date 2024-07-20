@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import connectDB from "./config/database.js";
 import userRoutes from "./routes/user.route.js";
+import taskRoutes from "./routes/task.route.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ connectDB();
 
 // Routes
 app.use("/api/users", userRoutes);
+app.use("/api/tasks", taskRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the Task Management API" });
