@@ -4,7 +4,21 @@ import { generateToken } from "../utils/helper.js";
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.validatedData;
-    const user = new User({ username, email, password });
+
+    // Check if password is provided for non-Google registration
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
+    }
+
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({ username, email, password: hashedPassword });
     await user.save();
     const token = generateToken(user._id);
     res.status(201).json({ user: { id: user._id, username, email }, token });
@@ -17,14 +31,18 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.validatedData;
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ error: "Invalid credentials" });
+    if (!user) {
+      return res.status(400).json({ error: "Invalid credentials" });
     }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
     const token = generateToken(user._id);
-    res.json({ user: { id: user._id, username: user.username, email }, token });
+    res.json({ user, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
-
-// Todo implement Google login
