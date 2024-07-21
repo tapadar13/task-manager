@@ -1,16 +1,40 @@
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { getTasks } from "../services/api";
 
 const AddTaskButton = ({ onAdd }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleSubmit = (e) => {
+  const { user } = useAuth();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAdd({ title, description, column: "todo" });
-    setTitle("");
-    setDescription("");
-    setIsModalOpen(false);
+
+    try {
+      // Fetch current tasks to determine the order
+      const response = await getTasks();
+      const fetchedTasks = response.data;
+      const maxOrder = fetchedTasks.reduce(
+        (max, task) => Math.max(max, task.order),
+        0
+      );
+
+      // Add the new task with the determined order
+      onAdd({
+        title,
+        description,
+        column: "todo",
+        order: maxOrder + 1,
+        user: user._id,
+      });
+      setTitle("");
+      setDescription("");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

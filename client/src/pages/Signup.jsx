@@ -19,7 +19,13 @@ const SignupPage = () => {
       return;
     }
     try {
-      const response = await register({ firstname, email, password });
+      const userData = {
+        username: firstname,
+        email,
+        password,
+      };
+
+      const response = await register(userData);
       login(response.data);
       navigate("/dashboard");
     } catch (error) {

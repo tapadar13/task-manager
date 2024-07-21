@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
 import Header from "../components/Header";
 import AddTaskButton from "../components/AddTaskButton";
