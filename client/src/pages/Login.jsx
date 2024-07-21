@@ -1,9 +1,25 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { login } from "../services/api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await login({ email, password });
+      authLogin(response.data);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -20,7 +36,7 @@ const LoginPage = () => {
         <div className="w-80">
           <h2 className="text-2xl font-semibold mb-4 text-blue-600">Login</h2>
           <div className="bg-white p-6 rounded shadow-md border-2 border-blue-600">
-            <form className="space-y-3">
+            <form className="space-y-3" onSubmit={handleSubmit}>
               <input
                 className="w-full p-2 border border-gray-300 rounded"
                 type="email"
