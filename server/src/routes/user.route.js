@@ -6,6 +6,7 @@ import {
   userRegistrationSchema,
   userLoginSchema,
 } from "../utils/validationSchemas.js";
+import { generateToken } from "../utils/helper.js";
 
 const router = express.Router();
 
@@ -19,12 +20,14 @@ router.get(
 );
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "/login",
+  }),
   (req, res) => {
     const { user, token } = req.user;
-    // redirect to actual frontend URL in production later
     res.redirect(
-      `http://localhost:3000/dashboard?token=${token}&userId=${user._id}`
+      `${process.env.FRONTEND_URL}/dashboard?token=${token}&userId=${user._id}`
     );
   }
 );

@@ -1,14 +1,29 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { login } from "../services/api";
+import { API_URL, login } from "../services/api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: authLogin } = useAuth();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const userId = params.get("userId");
+    if (token && userId) {
+      login({ token, userId });
+      navigate("/dashboard");
+    }
+  }, [location, login, navigate]);
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_URL}/auth/google`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +81,10 @@ const LoginPage = () => {
                 Signup
               </Link>
             </p>
-            <button className="w-full mt-4 bg-blue-600 text-white p-2 rounded flex items-center justify-center text-sm">
+            <button
+              className="w-full mt-4 bg-blue-600 text-white p-2 rounded flex items-center justify-center text-sm"
+              onClick={handleGoogleLogin}
+            >
               Login with Google
             </button>
           </div>

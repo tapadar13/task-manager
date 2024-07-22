@@ -1,9 +1,10 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api";
+export const API_URL = "http://localhost:3000/api";
 
 const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,7 +29,7 @@ export const getTasks = async () => {
   try {
     const response = await api.get("/tasks");
     console.log("Fetched tasks:", response.data);
-    return response;
+    return response.data;
   } catch (error) {
     console.error("Error fetching tasks:", error);
     throw error;

@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { register } from "../services/api";
+import { API_URL, register } from "../services/api";
 
 const SignupPage = () => {
   const [firstname, setFirstname] = useState("");
@@ -9,27 +9,52 @@ const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const userId = params.get("userId");
+    if (token && userId) {
+      login({ token, userId });
+      navigate("/dashboard");
+    }
+  }, [location, login, navigate]);
+
+  const handleGoogleSignup = () => {
+    window.location.href = `${API_URL}/auth/google`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (password !== confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
     try {
       const userData = {
-        username: firstname,
+        username: `${firstname} ${lastname}`.trim(),
         email,
         password,
       };
 
-      const response = await register(userData);
-      login(response.data);
-      navigate("/dashboard");
+      console.log("Sending registration data:", userData);
+      await register(userData);
+      navigate("/login");
     } catch (error) {
-      console.log(error);
+      console.error(
+        "Registration error:",
+        error.response?.data || error.message
+      );
+      setError(
+        error.response?.data?.error || "An error occurred during registration"
+      );
     }
   };
 
@@ -100,7 +125,10 @@ const SignupPage = () => {
                 Login
               </Link>
             </p>
-            <button className="w-full mt-4 bg-blue-600 text-white p-2 rounded flex items-center justify-center text-sm">
+            <button
+              className="w-full mt-4 bg-blue-600 text-white p-2 rounded flex items-center justify-center text-sm"
+              onClick={handleGoogleSignup}
+            >
               Signup with Google
             </button>
           </div>
