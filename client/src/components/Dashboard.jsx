@@ -34,7 +34,9 @@ const Dashboard = () => {
   const fetchTasks = async () => {
     try {
       const response = await getTasks();
+      console.log("Tasks: ", response.data);
       const fetchedTasks = response.data;
+      console.log("Fetched Tasks: ", fetchedTasks);
       const categorizedTasks = {
         todo: fetchedTasks.filter((task) => task.column === "todo"),
         in_progress: fetchedTasks.filter(

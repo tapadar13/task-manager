@@ -16,6 +16,7 @@ export const createTask = async (req, res) => {
 export const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ user: req.user._id }).sort({ order: 1 });
+    console.log("Tasks from DB:", tasks);
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
