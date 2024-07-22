@@ -5,11 +5,12 @@ const TaskList = ({ title, tasks, onDelete, onUpdate }) => {
     <div className="bg-white rounded shadow">
       <h2 className="bg-blue-500 text-white p-2 rounded-t">{title}</h2>
       <div className="p-2">
-        {tasks.map((task) => (
+        {tasks.map((task, index) => (
           <Task
             key={task._id}
             task={task}
-            onDelete={() => onDelete(task._id, task.column)}
+            index={index}
+            onDelete={onDelete}
             onUpdate={onUpdate}
           />
         ))}

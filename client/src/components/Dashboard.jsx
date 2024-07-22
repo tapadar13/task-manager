@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useAuth } from "../contexts/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
 import Header from "../components/Header";
@@ -12,12 +13,23 @@ const Dashboard = () => {
     in_progress: [],
     done: [],
   });
+  const [filteredTasks, setFilteredTasks] = useState({
+    todo: [],
+    in_progress: [],
+    done: [],
+  });
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("recent");
   const { logout } = useAuth();
 
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  useEffect(() => {
+    filterAndSortTasks();
+  }, [tasks, searchTerm, sortOption]);
 
   const fetchTasks = async () => {
     try {
@@ -33,8 +45,45 @@ const Dashboard = () => {
       setTasks(categorizedTasks);
       setLoading(false);
     } catch (error) {
-      setLoading(false);
+      console.log(error);
     }
+  };
+
+  const filterAndSortTasks = () => {
+    const filtered = Object.keys(tasks).reduce((acc, column) => {
+      acc[column] = tasks[column].filter((task) =>
+        task.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      return acc;
+    }, {});
+
+    const sorted = Object.keys(filtered).reduce((acc, column) => {
+      acc[column] = [...filtered[column]].sort((a, b) => {
+        switch (sortOption) {
+          case "recent":
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          case "oldest":
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          case "a-z":
+            return a.title.localeCompare(b.title);
+          case "z-a":
+            return b.title.localeCompare(a.title);
+          default:
+            return 0;
+        }
+      });
+      return acc;
+    }, {});
+
+    setFilteredTasks(sorted);
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
+  const handleSort = (option) => {
+    setSortOption(option);
   };
 
   const handleAddTask = async (newTask) => {
@@ -81,12 +130,6 @@ const Dashboard = () => {
 
   const handleDeleteTask = async (taskId, column) => {
     try {
-      console.log(
-        "Deleting task with taskId :",
-        taskId,
-        "and column: ",
-        column
-      );
       await deleteTask(taskId);
       setTasks((prevTasks) => ({
         ...prevTasks,
@@ -94,6 +137,57 @@ const Dashboard = () => {
       }));
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleDragEnd = async (result) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    const sourceColumn = source.droppableId;
+    const destinationColumn = destination.droppableId;
+    const taskToMove = tasks[sourceColumn].find(
+      (task) => task._id === draggableId
+    );
+
+    if (!taskToMove) {
+      console.error(
+        `Task with ID ${draggableId} not found in column ${sourceColumn}`
+      );
+      return;
+    }
+
+    const newTasks = { ...tasks };
+    newTasks[sourceColumn] = newTasks[sourceColumn].filter(
+      (task) => task._id !== draggableId
+    );
+    newTasks[destinationColumn] = [
+      ...newTasks[destinationColumn].slice(0, destination.index),
+      { ...taskToMove, column: destinationColumn },
+      ...newTasks[destinationColumn].slice(destination.index),
+    ];
+
+    setTasks(newTasks);
+
+    try {
+      await updateTask(draggableId, {
+        ...taskToMove,
+        column: destinationColumn,
+      });
+    } catch (error) {
+      console.error("Error updating task:", error);
+      // Revert the state if the API call fails
+      setTasks(tasks);
     }
   };
 
@@ -110,27 +204,26 @@ const Dashboard = () => {
       <Header onLogout={handleLogout} />
       <main className="container mx-auto px-4 py-8">
         <AddTaskButton onAdd={handleAddTask} />
-        <SearchAndFilter />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <TaskList
-            title="TODO"
-            tasks={tasks.todo}
-            onDelete={handleDeleteTask}
-            onUpdate={handleUpdateTask}
-          />
-          <TaskList
-            title="IN PROGRESS"
-            tasks={tasks.in_progress}
-            onDelete={handleDeleteTask}
-            onUpdate={handleUpdateTask}
-          />
-          <TaskList
-            title="DONE"
-            tasks={tasks.done}
-            onDelete={handleDeleteTask}
-            onUpdate={handleUpdateTask}
-          />
-        </div>
+        <SearchAndFilter onSearch={handleSearch} onSort={handleSort} />
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {Object.entries(filteredTasks).map(([columnId, columnTasks]) => (
+              <Droppable key={columnId} droppableId={columnId}>
+                {(provided) => (
+                  <div ref={provided.innerRef} {...provided.droppableProps}>
+                    <TaskList
+                      title={columnId.toUpperCase().replace("_", " ")}
+                      tasks={columnTasks}
+                      onDelete={handleDeleteTask}
+                      onUpdate={handleUpdateTask}
+                    />
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            ))}
+          </div>
+        </DragDropContext>
       </main>
     </div>
   );

@@ -5,13 +5,15 @@ const SearchAndFilter = ({ onSearch, onSort }) => {
   const [sortOption, setSortOption] = useState("recent");
 
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    onSearch(e.target.value);
+    const term = e.target.value;
+    setSearchTerm(term);
+    onSearch(term);
   };
 
   const handleSort = (e) => {
-    setSortOption(e.target.value);
-    onSort(e.target.value);
+    const option = e.target.value;
+    setSortOption(option);
+    onSort(option);
   };
 
   return (
