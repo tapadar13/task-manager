@@ -38,4 +38,7 @@ export const updateTask = (taskId, taskData) =>
   api.put(`/tasks/${taskId}`, taskData);
 export const deleteTask = (taskId) => api.delete(`/tasks/${taskId}`);
 
+// Add a test endpoint to check CORS
+export const testCORS = () => api.get("/");
+
 export default api;
