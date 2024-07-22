@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { toast } from "sonner";
+import { Loader } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
 import Header from "../components/Header";
@@ -201,7 +202,15 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader
+          className="animate-spin"
+          size={28}
+          style={{ color: "#1d4ed8" }}
+        />
+      </div>
+    );
   }
 
   return (
