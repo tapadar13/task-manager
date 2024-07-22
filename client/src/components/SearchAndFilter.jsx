@@ -19,8 +19,8 @@ const SearchAndFilter = ({ onSearch, onSort }) => {
   return (
     <div className="bg-white p-4 rounded shadow mb-4">
       <div className="flex flex-col md:flex-row justify-between items-center">
-        <div className="w-full md:w-1/2 mb-2 md:mb-0">
-          <label htmlFor="search" className="mr-2">
+        <div className=" md:w-1/2 mb-2 md:mb-0 sm:flex sm:justify-start">
+          <label htmlFor="search" className="mr-2 mt-0.5">
             Search:
           </label>
           <input
@@ -29,7 +29,7 @@ const SearchAndFilter = ({ onSearch, onSort }) => {
             placeholder="Search..."
             value={searchTerm}
             onChange={handleSearch}
-            className="border rounded p-1 w-full md:w-64"
+            className="border rounded p-1 md:w-64"
           />
         </div>
         <div>

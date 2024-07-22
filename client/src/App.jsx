@@ -7,8 +7,8 @@ import Dashboard from "./components/Dashboard";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <div className="min-h-screen bg-gray-100">
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -24,8 +24,8 @@ function App() {
             />
           </Routes>
         </div>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

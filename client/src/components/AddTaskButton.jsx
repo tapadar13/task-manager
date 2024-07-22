@@ -41,7 +41,7 @@ const AddTaskButton = ({ onAdd }) => {
     <>
       <button
         onClick={() => setIsModalOpen(true)}
-        className="w-full bg-blue-500 text-white p-2 rounded mb-4 hover:bg-blue-600 transition-colors"
+        className="w-[15rem] bg-blue-500 text-white p-2 rounded mb-4 hover:bg-blue-600 transition-colors"
       >
         Add Task
       </button>
