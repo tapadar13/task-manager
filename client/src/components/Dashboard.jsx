@@ -81,10 +81,16 @@ const Dashboard = () => {
 
   const handleDeleteTask = async (taskId, column) => {
     try {
+      console.log(
+        "Deleting task with taskId :",
+        taskId,
+        "and column: ",
+        column
+      );
       await deleteTask(taskId);
       setTasks((prevTasks) => ({
         ...prevTasks,
-        [column]: prevTasks[column].filter((task) => task.id !== taskId),
+        [column]: prevTasks[column].filter((task) => task._id !== taskId),
       }));
     } catch (error) {
       console.log(error);

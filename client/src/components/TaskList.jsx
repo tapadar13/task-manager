@@ -7,9 +7,9 @@ const TaskList = ({ title, tasks, onDelete, onUpdate }) => {
       <div className="p-2">
         {tasks.map((task) => (
           <Task
-            key={task.id}
+            key={task._id}
             task={task}
-            onDelete={() => onDelete(task.id, task.column)}
+            onDelete={() => onDelete(task._id, task.column)}
             onUpdate={onUpdate}
           />
         ))}

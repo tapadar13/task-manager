@@ -26,6 +26,11 @@ const Task = ({ task, onDelete, onUpdate }) => {
     }));
   };
 
+  const handleDelete = () => {
+    console.log("Deleting task with _id:", task._id);
+    onDelete(task._id, task.column);
+  };
+
   return (
     <div className="bg-blue-100 p-2 mb-2 rounded">
       {isEditing ? (
@@ -77,7 +82,7 @@ const Task = ({ task, onDelete, onUpdate }) => {
           </p>
           <div className="flex justify-end mt-2">
             <button
-              onClick={onDelete}
+              onClick={handleDelete}
               className="bg-red-500 text-white px-2 py-1 rounded text-xs mr-1"
             >
               Delete

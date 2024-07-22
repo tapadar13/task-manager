@@ -24,7 +24,16 @@ api.interceptors.request.use(
 
 export const login = (credentials) => api.post("/auth/login", credentials);
 export const register = (userData) => api.post("/auth/register", userData);
-export const getTasks = () => api.get("/tasks");
+export const getTasks = async () => {
+  try {
+    const response = await api.get("/tasks");
+    console.log("Fetched tasks:", response.data);
+    return response;
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    throw error;
+  }
+};
 export const createTask = (taskData) => api.post("/tasks", taskData);
 export const updateTask = (taskId, taskData) =>
   api.put(`/tasks/${taskId}`, taskData);
