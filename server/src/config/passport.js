@@ -6,12 +6,14 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/user.model.js";
 import { generateToken } from "../utils/helper.js";
 
+const GOOGLE_CALLBACK_PATH = "/api/auth/google/callback";
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/api/auth/google/callback",
+      callbackURL: `${process.env.BACKEND_URL}${GOOGLE_CALLBACK_PATH}`,
       proxy: true,
     },
     async (accessToken, refreshToken, profile, done) => {
