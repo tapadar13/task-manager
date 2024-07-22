@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
 import { API_URL, register } from "../services/api";
 
@@ -35,6 +36,7 @@ const SignupPage = () => {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
     try {
@@ -44,17 +46,14 @@ const SignupPage = () => {
         password,
       };
 
-      console.log("Sending registration data:", userData);
       await register(userData);
       navigate("/login");
+      toast.success("Registration successful. Please log in.");
     } catch (error) {
-      console.error(
-        "Registration error:",
-        error.response?.data || error.message
-      );
       setError(
         error.response?.data?.error || "An error occurred during registration"
       );
+      toast.error("Registration failed. Please try again.");
     }
   };
 
@@ -63,10 +62,15 @@ const SignupPage = () => {
       <header className="bg-blue-600 p-2 flex justify-between items-center">
         <div className="text-white text-xl">☰</div>
         <div>
-          <button className="text-white text-sm mr-2">Login</button>
-          <button className="bg-white text-blue-600 px-3 py-1 rounded text-sm">
+          <Link to="/login" className="text-white text-sm mr-2">
+            Login
+          </Link>
+          <Link
+            to="/signup"
+            className="bg-white text-blue-600 px-3 py-1 rounded text-sm"
+          >
             Signup
-          </button>
+          </Link>
         </div>
       </header>
       <main className="flex-grow flex items-center justify-center">

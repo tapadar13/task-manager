@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
 import { API_URL, login } from "../services/api";
 
@@ -31,8 +32,10 @@ const LoginPage = () => {
       const response = await login({ email, password });
       authLogin(response.data);
       navigate("/dashboard");
+      toast.success("Logged in successfully");
     } catch (error) {
       console.error(error);
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 
@@ -41,10 +44,15 @@ const LoginPage = () => {
       <header className="bg-blue-600 p-2 flex justify-between items-center">
         <div className="text-white text-xl">☰</div>
         <div>
-          <button className="bg-white text-blue-600 px-3 py-1 rounded text-sm mr-2">
+          <Link
+            to="/login"
+            className="bg-white text-blue-600 px-3 py-1 rounded text-sm mr-2"
+          >
             Login
-          </button>
-          <button className="text-white text-sm">Signup</button>
+          </Link>
+          <Link to="/signup" className="text-white text-sm">
+            Signup
+          </Link>
         </div>
       </header>
       <main className="flex-grow flex items-center justify-center">

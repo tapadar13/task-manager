@@ -16,7 +16,6 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        console.log("Google strategy callback reached", profile);
         let user = await User.findOne({ googleId: profile.id });
 
         if (!user) {

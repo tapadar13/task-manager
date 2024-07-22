@@ -16,7 +16,6 @@ export const createTask = async (req, res) => {
 export const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ user: req.user._id }).sort({ order: 1 });
-    console.log("Tasks from DB:", tasks);
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -41,7 +40,6 @@ export const updateTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
   try {
-    console.log("Request to delete task with _id:", req.params.id);
     const task = await Task.findOneAndDelete({
       _id: req.params.id,
       user: req.user._id,

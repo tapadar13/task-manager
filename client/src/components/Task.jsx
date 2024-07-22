@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
+import { toast } from "sonner";
 import EditTaskModal from "./EditTaskModal";
 import ViewDetailsModal from "./ViewDetailsModal";
 
@@ -16,8 +17,10 @@ const Task = ({ task, index, onDelete, onUpdate }) => {
   };
 
   const handleDelete = () => {
-    console.log("Deleting task with _id:", task._id);
     onDelete(task._id, task.column);
+    toast("Task deleted", {
+      description: "The task has been removed from the board.",
+    });
   };
 
   return (

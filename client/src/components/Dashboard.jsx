@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { toast } from "sonner";
 import { useAuth } from "../contexts/AuthContext";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/api";
 import Header from "../components/Header";
@@ -34,9 +35,7 @@ const Dashboard = () => {
   const fetchTasks = async () => {
     try {
       const response = await getTasks();
-      console.log("Tasks: ", response.data);
       const fetchedTasks = response.data;
-      console.log("Fetched Tasks: ", fetchedTasks);
       const categorizedTasks = {
         todo: fetchedTasks.filter((task) => task.column === "todo"),
         in_progress: fetchedTasks.filter(
@@ -96,8 +95,10 @@ const Dashboard = () => {
         ...prevTasks,
         [createdTask.column]: [...prevTasks[createdTask.column], createdTask],
       }));
+      toast.success("Task added successfully");
     } catch (error) {
       console.log(error);
+      toast.error("Failed to add task");
     }
   };
 
@@ -125,8 +126,10 @@ const Dashboard = () => {
 
         return newTasks;
       });
+      toast.success("Task updated successfully");
     } catch (error) {
       console.log(error);
+      toast.error("Failed to update task");
     }
   };
 
