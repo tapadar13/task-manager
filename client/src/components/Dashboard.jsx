@@ -52,18 +52,26 @@ const Dashboard = () => {
 
   const handleUpdateTask = async (updatedTask) => {
     try {
-      const response = await updateTask(updatedTask.id, updatedTask);
+      const response = await updateTask(updatedTask._id, updatedTask);
       const updated = response.data;
       setTasks((prevTasks) => {
         const newTasks = { ...prevTasks };
+
         // Remove from old column
         Object.keys(newTasks).forEach((column) => {
           newTasks[column] = newTasks[column].filter(
-            (task) => task.id !== updated.id
+            (task) => task._id !== updated._id
           );
         });
+
         // Add to new column
         newTasks[updated.column].push(updated);
+
+        // Ensure tasks are sorted by 'order'
+        Object.keys(newTasks).forEach((column) => {
+          newTasks[column] = newTasks[column].sort((a, b) => a.order - b.order);
+        });
+
         return newTasks;
       });
     } catch (error) {
