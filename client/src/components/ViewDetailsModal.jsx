@@ -1,4 +1,18 @@
 const ViewDetailsModal = ({ task, onClose }) => {
+  // Function to format the status text
+  const formatStatus = (status) => {
+    switch (status) {
+      case "todo":
+        return "To Do";
+      case "in_progress":
+        return "In Progress";
+      case "done":
+        return "Done";
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-4 rounded-lg w-96">
@@ -10,7 +24,7 @@ const ViewDetailsModal = ({ task, onClose }) => {
           <strong>Description:</strong> {task.description}
         </p>
         <p>
-          <strong>Status:</strong> {task.column}
+          <strong>Status:</strong> {formatStatus(task.column)}
         </p>
         <p>
           <strong>Created At:</strong>{" "}
